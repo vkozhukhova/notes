@@ -13,7 +13,7 @@ import java.util.List;
 public class NoteServiceImpl implements NoteService {
 
     @Autowired
-    private NoteDAO noteDAO = new NoteDAOImpl();
+    private NoteDAO noteDAO;
 
     @Override
     @Transactional

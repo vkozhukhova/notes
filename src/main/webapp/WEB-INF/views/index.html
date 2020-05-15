@@ -10,7 +10,9 @@
 <div class="noteslist" th:unless="${#lists.isEmpty(notesList)}">
 
     <h2 th:text="#{title.list}">List of Notes</h2>
-<p>просто текст бла-бла</p>
+
+<p><a th:href="@{'/?lang=en'}">English</a> | <a th:href="@{'/?lang=ru'}">Русский</a></p>
+
     <table>
         <thead>
         <tr>
