@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+    <title th:text="#{title.application}">Notes WebApp</title>
+</head>
+<body>
+
+<div class="noteslist" th:unless="${#lists.isEmpty(notesList)}">
+
+    <h2 th:text="#{title.list}">List of Notes</h2>
+<p>просто текст бла-бла</p>
+    <table>
+        <thead>
+        <tr>
+            <th th:text="#{note.id}">Id</th>
+            <th th:text="#{note.header}">Header</th>
+            <th th:text="#{note.text}">Text</th>
+            <th th:text="#{note.creation}">Creation DateTime</th>
+            <th th:text="#{note.edition}">Last Edition DateTime</th>
+            <th th:text="#{note.action}">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="n : ${notesList}">
+            <td th:text="${n.id}"></td>
+            <td th:text="${n.header}"></td>
+            <td th:text="${n.text}"></td>
+            <td th:text="${#temporals.format(n.creationDateTime, 'dd-MM-yyyy HH:mm:ss')}"></td>
+            <td th:text="${#temporals.format(n.lastEditionDateTime, 'dd-MM-yyyy HH:mm:ss')}"></td>
+            <td>
+                <a th:href="@{'/edit/' + ${n.id}}" th:text="#{note.edit}">edit</a>
+                <a th:href="@{'/delete/' + ${n.id}}" th:text="#{note.delete}">delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2 th:text="#{title.add}">Add</h2>
+    <a th:href="@{/add}" th:text="#{note.add}">Add new note</a>
+</div>
+</body>
+</html>

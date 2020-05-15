@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{title.editpage}">Notes Edit Page</title>
+</head>
+<body>
+<h1 th:text="#{title.edit}">Edit note</h1>
+<form action="#" th:action="${#strings.isEmpty(note.header)}? @{/add}: @{/edit}" th:object="${note}" method="post"
+ >
+
+    <p th:if="${not #strings.isEmpty(note.header)}"><input type="hidden" name="id" th:field="*{id}"/></p>
+    <p><label th:text="#{note.header}"></label><input type="text" name="header" th:field="*{header}" /></p>
+    <p><label th:text="#{note.text}"></label><input type="text" name="text" th:field="*{text}" /></p>
+    <p><input type="hidden" name="creationDateTime" th:field="*{creationDateTime}"/></p>
+    <p><input type="hidden" name="lastEditionDateTime" th:field="*{lastEditionDateTime}"/></p>
+    <p><input type="submit" th:value="#{button.submit}"/></p>
+</form>
+</body>
+</html>
