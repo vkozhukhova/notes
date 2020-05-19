@@ -4,6 +4,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "notes")
@@ -28,6 +30,9 @@ public class Note {
     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @Column(name = "last_edition")
     private LocalDateTime lastEditionDateTime;
+
+    @OneToMany(mappedBy = "note", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<NoteHistory> noteHistoryList = new ArrayList<>();
 
     public String getHeader() {
         return header;
@@ -69,6 +74,14 @@ public class Note {
         this.id = id;
     }
 
+    public List<NoteHistory> getNoteHistoryList() {
+        return noteHistoryList;
+    }
+
+    public void setNoteHistoryList(List<NoteHistory> noteHistoryList) {
+        this.noteHistoryList = noteHistoryList;
+    }
+
     @Override
     public String toString() {
         return "Note{" +
@@ -77,6 +90,7 @@ public class Note {
                 ", text='" + text + '\'' +
                 ", creationDateTime=" + creationDateTime +
                 ", lastEditionDateTime=" + lastEditionDateTime +
+                ", noteHistoryList=" + noteHistoryList +
                 '}';
     }
 }

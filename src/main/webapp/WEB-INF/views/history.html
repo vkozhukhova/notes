@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+    <title th:text="#{title.history}">Notes WebApp</title>
+</head>
+<body>
+
+<div th:if="${not #lists.isEmpty(notesHistoryList)}">
+
+<div class="notesHistoryList" th:unless="${#lists.isEmpty(notesHistoryList)}">
+
+    <h2 th:text="#{title.historylist}">List of Notes</h2>
+    <p th:text="'id = ' + ${noteId}"></p>
+
+    <table>
+        <thead>
+        <tr>
+            <th th:text="#{note.header}">Header</th>
+            <th th:text="#{note.text}">Text</th>
+            <th th:text="#{note.edition}">Last Edition DateTime</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="n : ${notesHistoryList}">
+            <td th:text="${n.header}"></td>
+            <td th:text="${n.text}"></td>
+            <td th:text="${#temporals.format(n.lastEditionDateTime, 'dd-MM-yyyy HH:mm:ss')}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+</div>
+<div th:if="${#lists.isEmpty(notesHistoryList)}">
+    <h2 th:text="#{title.nohistory}">List of Notes</h2>
+</div>
+
+<p><a th:href="@{/}" th:text="#{title.application}">Main</a></p>
+
+</body>
+</html>

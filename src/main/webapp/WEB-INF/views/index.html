@@ -34,6 +34,7 @@
             <td>
                 <a th:href="@{'/edit/' + ${n.id}}" th:text="#{note.edit}">edit</a>
                 <a th:href="@{'/delete/' + ${n.id}}" th:text="#{note.delete}">delete</a>
+                <a th:href="@{'/history/' + ${n.id}}" th:text="#{note.history}">history</a>
             </td>
         </tr>
         </tbody>

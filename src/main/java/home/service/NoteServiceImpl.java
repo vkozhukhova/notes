@@ -1,8 +1,10 @@
 package home.service;
 
 import home.dao.NoteDAO;
-import home.dao.NoteDAOImpl;
+
 import home.model.Note;
+
+import home.model.NoteHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,4 +46,11 @@ public class NoteServiceImpl implements NoteService {
     public Note getById(int id) {
         return noteDAO.getById(id);
     }
+
+    @Override
+    @Transactional
+    public List<NoteHistory> historicalNotes(int id) {
+        return noteDAO.historicalNotes(id);
+    }
+
 }

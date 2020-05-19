@@ -1,6 +1,7 @@
 package home.controllers;
 
 import home.model.Note;
+import home.model.NoteHistory;
 import home.service.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,12 +27,20 @@ public class NoteController {
         return "index";
     }
 
+
     @GetMapping("/edit/{id}")
     public String editPage(@PathVariable("id") int id, Model model) {
         Note note = noteService.getById(id);
-        note.setLastEditionDateTime(LocalDateTime.now());
         model.addAttribute("note", note);
         return "editPage";
+    }
+
+    @GetMapping("/history/{id}")
+    public String history(@PathVariable("id") int id, Model model) {
+        List<NoteHistory> notesHistoryList = noteService.historicalNotes(id);
+        model.addAttribute("notesHistoryList", notesHistoryList);
+        model.addAttribute("noteId", id);
+        return "history";
     }
 
     @PostMapping("/edit")
@@ -43,8 +52,6 @@ public class NoteController {
     @GetMapping(value = "/add")
     public String addPage(Model model) {
         Note note = new Note();
-        note.setCreationDateTime(LocalDateTime.now());
-        note.setLastEditionDateTime(LocalDateTime.now());
         model.addAttribute("note", note);
         return "editPage";
     }
