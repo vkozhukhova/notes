@@ -53,4 +53,16 @@ public class NoteServiceImpl implements NoteService {
         return noteDAO.historicalNotes(id);
     }
 
+    @Override
+    @Transactional
+    public boolean exportToJson(int id) {
+        return noteDAO.exportToJson(id);
+    }
+
+    @Override
+    @Transactional
+    public boolean importFromJson(String jsonString) {
+        return noteDAO.importFromJson(jsonString);
+    }
+
 }

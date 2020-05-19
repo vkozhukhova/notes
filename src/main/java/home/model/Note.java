@@ -1,5 +1,12 @@
 package home.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -15,6 +22,7 @@ public class Note {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private int id;
 
     @Column(name = "header")
@@ -25,12 +33,15 @@ public class Note {
 
     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @Column(name = "creation")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime creationDateTime;
 
     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @Column(name = "last_edition")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime lastEditionDateTime;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "note", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<NoteHistory> noteHistoryList = new ArrayList<>();
 

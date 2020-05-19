@@ -1,15 +1,32 @@
 package home.dao;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import home.model.Note;
 import home.model.NoteHistory;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Repository;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 @Repository
 public class NoteDAOImpl implements NoteDAO {
@@ -69,6 +86,42 @@ public class NoteDAOImpl implements NoteDAO {
     public List<NoteHistory> historicalNotes(int id) {
         Session session = sessionFactory.getCurrentSession();
         return session.createQuery("from NoteHistory where note.id=:id").setParameter("id", id).list();
+    }
+
+    @Override
+    public boolean exportToJson(int id) {
+        Note note = getById(id);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+            String dir = System.getProperty("java.io.tmpdir") + File.separator;
+            String fileName = dir +
+                    String.valueOf(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy_HH:mm:ss")))+".json";
+            File jsonFile = new File(fileName);
+            Files.createFile(jsonFile.toPath());
+            jsonFile.setReadable(true, false);
+            ow.writeValue(jsonFile, note);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean importFromJson(String jsonString) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            Note note = mapper.readValue(jsonString, Note.class);
+            Session session = sessionFactory.getCurrentSession();
+            session.save(note);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 }

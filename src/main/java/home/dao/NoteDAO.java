@@ -12,4 +12,6 @@ public interface NoteDAO {
     void edit(Note note);
     Note getById(int id);
     List<NoteHistory> historicalNotes(int id);
+    boolean exportToJson(int id);
+    boolean importFromJson(String jsonString);
 }

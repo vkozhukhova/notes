@@ -35,6 +35,7 @@
                 <a th:href="@{'/edit/' + ${n.id}}" th:text="#{note.edit}">edit</a>
                 <a th:href="@{'/delete/' + ${n.id}}" th:text="#{note.delete}">delete</a>
                 <a th:href="@{'/history/' + ${n.id}}" th:text="#{note.history}">history</a>
+                <a th:href="@{'/json/' + ${n.id}}" th:text="#{note.json}">history</a>
             </td>
         </tr>
         </tbody>
@@ -42,6 +43,16 @@
 
     <h2 th:text="#{title.add}">Add</h2>
     <a th:href="@{/add}" th:text="#{note.add}">Add new note</a>
+
+    <h2 th:text="#{button.import}">Import</h2>
+    <p th:text="${message}" th:if="${message ne null}"></p>
+    <div>
+        <form method="post" th:action="@{/import}" enctype="multipart/form-data">
+            <div><input type="file" name="file" /></div>
+            <p><button type="submit" th:text="#{button.import}">Import</button></p>
+        </form>
+    </div>
+
 </div>
 </body>
 </html>
