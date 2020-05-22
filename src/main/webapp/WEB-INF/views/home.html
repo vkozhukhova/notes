@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+    <title th:text="#{title.application}">Notes WebApp</title>
+</head>
+<body>
+<div sec:authorize="isAuthenticated()">
+    Authenticated as <span sec:authentication="name"></span></div>
+
+<form th:action="@{/logout}" method="get">
+    <button name="logout" type="Submit">Logout</button>
+</form>
+
+
+<div class="noteslist" th:unless="${#lists.isEmpty(notesList)}">
+
+    <h2 th:text="#{title.list}">List of Notes</h2>
+
+<p><a th:href="@{'/?lang=en'}">English</a> | <a th:href="@{'/?lang=ru'}">Русский</a></p>
+
+    <table>
+        <thead>
+        <tr>
+            <th th:text="#{note.id}">Id</th>
+            <th th:text="#{note.header}">Header</th>
+            <th th:text="#{note.text}">Text</th>
+            <th th:text="#{note.creation}">Creation DateTime</th>
+            <th th:text="#{note.edition}">Last Edition DateTime</th>
+            <th th:text="#{note.action}">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="n : ${notesList}">
+            <td th:text="${n.id}"></td>
+            <td th:text="${n.header}"></td>
+            <td th:text="${n.text}"></td>
+            <td th:text="${#temporals.format(n.creationDateTime, 'dd-MM-yyyy HH:mm:ss')}"></td>
+            <td th:text="${#temporals.format(n.lastEditionDateTime, 'dd-MM-yyyy HH:mm:ss')}"></td>
+            <td>
+                <a th:href="@{'/edit/' + ${n.id}}" th:text="#{note.edit}">edit</a>
+                <a th:href="@{'/delete/' + ${n.id}}" th:text="#{note.delete}">delete</a>
+                <a th:href="@{'/history/' + ${n.id}}" th:text="#{note.history}">history</a>
+                <a th:href="@{'/json/' + ${n.id}}" th:text="#{note.json}">history</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2 th:text="#{title.add}">Add</h2>
+    <a th:href="@{/add}" th:text="#{note.add}">Add new note</a>
+
+    <h2 th:text="#{button.import}">Import</h2>
+    <p th:text="${message}" th:if="${message ne null}"></p>
+    <div>
+        <form method="post" th:action="@{/import}" enctype="multipart/form-data">
+            <div><input type="file" name="file" /></div>
+            <p><button type="submit" th:text="#{button.import}">Import</button></p>
+        </form>
+    </div>
+
+</div>
+
+</body>
+</html>

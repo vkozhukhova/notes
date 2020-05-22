@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <title>Add user page</title>
+</head>
+<body>
+<form th:action="@{/login}" method="get">
+    <button type="Submit">Go To Login Page</button>
+</form>
+
+<form autocomplete="off" action="#" th:action="@{/registration}" th:object="${user}" method="post">
+
+    <p><input type="text" name="username" autofocus="autofocus" th:field="*{username}" placeholder="UserName"/>
+        <label th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></label>
+    </p>
+    <p>
+        <input type="password" name="password" th:field="*{password}" placeholder="Password"/>
+        <label th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></label>
+    </p>
+    <button type="submit">Register User</button>
+    <h2><span th:text="${successMessage}" ></span></h2>
+</form>
+</body>
+</html>

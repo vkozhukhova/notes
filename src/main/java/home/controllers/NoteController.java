@@ -2,8 +2,13 @@ package home.controllers;
 
 import home.model.Note;
 import home.model.NoteHistory;
+import home.model.User;
 import home.service.NoteService;
+import home.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -32,6 +37,13 @@ public class NoteController {
         return "index";
     }
 
+
+    @GetMapping(value = "/home")
+    public String notes(){
+        return "home";
+    }
+
+
     @GetMapping("/history/{id}")
     public String history(@PathVariable("id") int id, Model model) {
         List<NoteHistory> notesHistoryList = noteService.historicalNotes(id);
@@ -50,7 +62,7 @@ public class NoteController {
     @PostMapping("/edit")
     public String editNote(@ModelAttribute("note") Note note) {
         noteService.edit(note);
-        return "redirect:/";
+        return "redirect:/home";
     }
 
     @GetMapping(value = "/add")
@@ -63,20 +75,20 @@ public class NoteController {
     @PostMapping("/add")
     public String addNote(@ModelAttribute("note") Note note) {
         noteService.add(note);
-        return "redirect:/";
+        return "redirect:/home";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteNote(@PathVariable("id") int id) {
         Note note = noteService.getById(id);
         noteService.delete(note);
-        return "redirect:/";
+        return "redirect:/home";
     }
 
     @GetMapping("/json/{id}")
     public String exportToJson(@PathVariable("id") int id) {
         noteService.exportToJson(id);
-        return "redirect:/";
+        return "redirect:/home";
     }
 
     @PostMapping("/import")
@@ -84,7 +96,7 @@ public class NoteController {
         // check if file is empty
         if (file.isEmpty()) {
             attributes.addFlashAttribute("message", "Please select a file to import.");
-            return "redirect:/";
+            return "redirect:/home";
         }
         try {
             String jsonString = new String(file.getBytes(), StandardCharsets.UTF_8);
@@ -94,7 +106,7 @@ public class NoteController {
             e.printStackTrace();
         }
 
-        return "redirect:/";
+        return "redirect:/home";
     }
 
 

@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import java.io.File;
@@ -30,36 +32,49 @@ import java.util.stream.Collectors;
 
 @Repository
 public class NoteDAOImpl implements NoteDAO {
-    private SessionFactory sessionFactory;
+    @PersistenceContext
+    EntityManager entityManager;
 
-    @Autowired
+   /* @Autowired
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
-
+*/
     @Override
     public List<Note> allNotes() {
-        Session session = sessionFactory.getCurrentSession();
-        return session.createQuery("from Note").list();
+
+        //Session session = sessionFactory.getCurrentSession();
+        return entityManager.createQuery("from Note").getResultList();
     }
 
     @Override
     public void add(Note note) {
-        Session session = sessionFactory.getCurrentSession();
+        //Session session = entityManager.unwrap(Session.class);
+        //Session session = sessionFactory.getCurrentSession();
         note.setCreationDateTime(LocalDateTime.now());
         note.setLastEditionDateTime(LocalDateTime.now());
-        session.save(note);
+        entityManager.persist(note);
+        //session.save(note);
     }
 
     @Override
     public void delete(Note note) {
-        Session session = sessionFactory.getCurrentSession();
-        session.delete(note);
+        //Session session = entityManager.unwrap(Session.class);
+        //Session session = sessionFactory.getCurrentSession();
+
+        //session.delete(note);
+        if (entityManager.contains(note)) {
+            entityManager.remove(note);
+        } else {
+            Note n = entityManager.getReference(note.getClass(), note.getId());
+            entityManager.remove(n);
+        }
     }
 
     @Override
     public void edit(Note newNote) {
-        Session session = sessionFactory.getCurrentSession();
+        Session session = entityManager.unwrap(Session.class);
+        //Session session = sessionFactory.getCurrentSession();
         Note oldNote = session.find(Note.class, newNote.getId());
         System.out.println("oldNote = " + oldNote);
         NoteHistory noteHistory = new NoteHistory();
@@ -72,20 +87,24 @@ public class NoteDAOImpl implements NoteDAO {
         oldNote.setText(newNote.getText());
         oldNote.setLastEditionDateTime(LocalDateTime.now());
         oldNote.getNoteHistoryList().add(noteHistory);
-        session.update(oldNote);
+        entityManager.merge(oldNote);
+        //session.update(oldNote);
 
     }
 
     @Override
     public Note getById(int id) {
-        Session session = sessionFactory.getCurrentSession();
-        return session.get(Note.class, id);
+        //Session session = entityManager.unwrap(Session.class);
+        //Session session = sessionFactory.getCurrentSession();
+        return entityManager.find(Note.class, id);
+        //return session.get(Note.class, id);
     }
 
     @Override
     public List<NoteHistory> historicalNotes(int id) {
-        Session session = sessionFactory.getCurrentSession();
-        return session.createQuery("from NoteHistory where note.id=:id").setParameter("id", id).list();
+        //Session session = entityManager.unwrap(Session.class);
+        //Session session = sessionFactory.getCurrentSession();
+        return entityManager.createQuery("from NoteHistory where note.id=:id").setParameter("id", id).getResultList();
     }
 
     @Override
@@ -115,8 +134,10 @@ public class NoteDAOImpl implements NoteDAO {
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
             Note note = mapper.readValue(jsonString, Note.class);
-            Session session = sessionFactory.getCurrentSession();
-            session.save(note);
+
+            //Session session = sessionFactory.getCurrentSession();
+            //session.save(note);
+            entityManager.persist(note);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
