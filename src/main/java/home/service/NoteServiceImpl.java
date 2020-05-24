@@ -19,14 +19,14 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     @Transactional
-    public List<Note> allNotes() {
-        return noteDAO.allNotes();
+    public List<Note> allNotes(long userId) {
+        return noteDAO.allNotes(userId);
     }
 
     @Override
     @Transactional
-    public void add(Note note) {
-        noteDAO.add(note);
+    public void add(Note note, long userId) {
+        noteDAO.add(note, userId);
     }
 
     @Override
@@ -61,8 +61,8 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     @Transactional
-    public boolean importFromJson(String jsonString) {
-        return noteDAO.importFromJson(jsonString);
+    public boolean importFromJson(String jsonString, long userId) {
+        return noteDAO.importFromJson(jsonString, userId);
     }
 
 }

@@ -2,13 +2,14 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Welcome</title>
+    <title>Welcome to Notes Web App</title>
 </head>
 <body>
-<div>
+<h2>Welcome to Notes Web App</h2>
 
-        <h4><a th:href="@{/login}">Войти</a></h4>
-        <h4><a th:href="@{/registration}">Зарегистрироваться</a></h4>
+<div>
+        <h3><a th:href="@{/login}">Log In</a></h3>
+        <h3><a th:href="@{/registration}">Sign Up</a></h3>
 <!--
     <div sec:authorize="hasRole('ADMIN')">
         <h4><a href="/admin">Админка</a></h4>
@@ -19,7 +20,6 @@
     <div sec:authorize access="isAuthenticated()">
         <h4><a href="/logout">Выйти</a></h4>
     </div>-->
-
 </div>
 
 </body>

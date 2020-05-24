@@ -8,7 +8,8 @@
 </head>
 <body>
 <div sec:authorize="isAuthenticated()">
-    Authenticated as <span sec:authentication="name"></span></div>
+    <span th:text="#{title.authenticated}"> </span>
+     <span  sec:authentication="name"></span></div>
 
 <form th:action="@{/logout}" method="get">
     <button name="logout" type="Submit">Logout</button>
@@ -19,7 +20,7 @@
 
     <h2 th:text="#{title.list}">List of Notes</h2>
 
-<p><a th:href="@{'/?lang=en'}">English</a> | <a th:href="@{'/?lang=ru'}">Русский</a></p>
+<p><a th:href="@{'?lang=en'}">English</a> | <a th:href="@{'?lang=ru'}">Русский</a></p>
 
     <table>
         <thead>
@@ -49,11 +50,13 @@
         </tbody>
     </table>
 
+    <b><p align="center" th:text="${export}" th:if="${export ne null}"></p></b>
+</div>
     <h2 th:text="#{title.add}">Add</h2>
     <a th:href="@{/add}" th:text="#{note.add}">Add new note</a>
 
     <h2 th:text="#{button.import}">Import</h2>
-    <p th:text="${message}" th:if="${message ne null}"></p>
+    <b><p th:text="${message}" th:if="${message ne null}"></p></b>
     <div>
         <form method="post" th:action="@{/import}" enctype="multipart/form-data">
             <div><input type="file" name="file" /></div>
@@ -61,7 +64,7 @@
         </form>
     </div>
 
-</div>
+
 
 </body>
 </html>

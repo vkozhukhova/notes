@@ -33,7 +33,7 @@ public class RegistrationController {
     }
 
     @PostMapping("/registration")
-    public String addUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult, Model model, RedirectAttributes attributes) {
+    public String addUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult, Model model) {
 
         User userExists = userService.findUserByUsername(user.getUsername());
         if (userExists != null) {
@@ -46,10 +46,10 @@ public class RegistrationController {
         }
         else {
             userService.saveUser(user);
-            attributes.addFlashAttribute("successMessage", "User has been registered successfully");
+            model.addAttribute("successMessage", "User has been registered successfully");
             model.addAttribute("user", new User());
+            return "registration";
         }
-        return "registration";
 
     }
 }

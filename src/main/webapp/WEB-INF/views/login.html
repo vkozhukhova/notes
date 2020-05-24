@@ -10,10 +10,10 @@
 </form>
 
 <div th:if="${param.error}">
-    <p>User Name or Password invalid, please verify</p>
+    <b><p>User Name or Password invalid, please verify</p></b>
 </div>
 <div th:if="${param.logout}">
-    <p>You have been logged out</p>
+    <b><p>You have been logged out</p></b>
 </div>
 
 <form th:action="@{/login}" method="post">

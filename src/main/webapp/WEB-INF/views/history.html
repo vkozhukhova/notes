@@ -12,7 +12,7 @@
 <div class="notesHistoryList" th:unless="${#lists.isEmpty(notesHistoryList)}">
 
     <h2 th:text="#{title.historylist}">List of Notes</h2>
-    <p th:text="'id = ' + ${noteId}"></p>
+    <p th:text="'id = ' + ${noteId} + ', created ' + ${#temporals.format(noteCreated, 'dd-MM-yyyy HH:mm:ss')}"></p>
 
     <table>
         <thead>

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import home.model.Note;
 import home.model.NoteHistory;
+import home.model.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,18 +42,23 @@ public class NoteDAOImpl implements NoteDAO {
     }
 */
     @Override
-    public List<Note> allNotes() {
+    public List<Note> allNotes(long userId) {
 
         //Session session = sessionFactory.getCurrentSession();
-        return entityManager.createQuery("from Note").getResultList();
+
+        return entityManager.createQuery("from Note where user.id=:owner_id")
+                    .setParameter("owner_id", userId)
+                    .getResultList();
     }
 
     @Override
-    public void add(Note note) {
+    public void add(Note note, long userId) {
         //Session session = entityManager.unwrap(Session.class);
         //Session session = sessionFactory.getCurrentSession();
         note.setCreationDateTime(LocalDateTime.now());
         note.setLastEditionDateTime(LocalDateTime.now());
+        User user = entityManager.find(User.class, userId);
+        note.setUser(user);
         entityManager.persist(note);
         //session.save(note);
     }
@@ -73,16 +79,18 @@ public class NoteDAOImpl implements NoteDAO {
 
     @Override
     public void edit(Note newNote) {
-        Session session = entityManager.unwrap(Session.class);
+        //Session session = entityManager.unwrap(Session.class);
         //Session session = sessionFactory.getCurrentSession();
-        Note oldNote = session.find(Note.class, newNote.getId());
-        System.out.println("oldNote = " + oldNote);
+        Note oldNote = entityManager.find(Note.class, newNote.getId());
+        //Note oldNote = session.find(Note.class, newNote.getId());
+        //System.out.println("oldNote = " + oldNote);
         NoteHistory noteHistory = new NoteHistory();
         noteHistory.setNote(oldNote);
         noteHistory.setHeader(oldNote.getHeader());
         noteHistory.setText(oldNote.getText());
         noteHistory.setLastEditionDateTime(oldNote.getLastEditionDateTime());
-        session.save(noteHistory);
+        entityManager.persist(noteHistory);
+        //session.save(noteHistory);
         oldNote.setHeader(newNote.getHeader());
         oldNote.setText(newNote.getText());
         oldNote.setLastEditionDateTime(LocalDateTime.now());
@@ -129,15 +137,12 @@ public class NoteDAOImpl implements NoteDAO {
     }
 
     @Override
-    public boolean importFromJson(String jsonString) {
+    public boolean importFromJson(String jsonString, long userId) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
             Note note = mapper.readValue(jsonString, Note.class);
-
-            //Session session = sessionFactory.getCurrentSession();
-            //session.save(note);
-            entityManager.persist(note);
+            add(note, userId);
             return true;
         } catch (IOException e) {
             e.printStackTrace();

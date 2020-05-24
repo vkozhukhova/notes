@@ -45,6 +45,10 @@ public class Note {
     @OneToMany(mappedBy = "note", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<NoteHistory> noteHistoryList = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User user;
+
     public String getHeader() {
         return header;
     }
@@ -91,6 +95,14 @@ public class Note {
 
     public void setNoteHistoryList(List<NoteHistory> noteHistoryList) {
         this.noteHistoryList = noteHistoryList;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override

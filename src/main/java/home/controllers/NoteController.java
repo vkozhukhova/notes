@@ -5,9 +5,13 @@ import home.model.NoteHistory;
 import home.model.User;
 import home.service.NoteService;
 import home.service.UserDetailsServiceImpl;
+import home.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -26,10 +31,20 @@ public class NoteController {
 
     @Autowired
     private NoteService noteService;
+    @Autowired
+    private UserService userService;
 
     @ModelAttribute("notesList")
     public List<Note> showNotes() {
-        return this.noteService.allNotes();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            String username = authentication.getName();
+            User user = userService.findUserByUsername(username);
+            return this.noteService.allNotes( user.getId());
+        } else {
+            return Collections.emptyList();
+        }
+
     }
 
     @GetMapping(value = "/")
@@ -47,8 +62,10 @@ public class NoteController {
     @GetMapping("/history/{id}")
     public String history(@PathVariable("id") int id, Model model) {
         List<NoteHistory> notesHistoryList = noteService.historicalNotes(id);
+        Note note = noteService.getById(id);
         model.addAttribute("notesHistoryList", notesHistoryList);
         model.addAttribute("noteId", id);
+        model.addAttribute("noteCreated", note.getCreationDateTime());
         return "history";
     }
 
@@ -74,7 +91,12 @@ public class NoteController {
 
     @PostMapping("/add")
     public String addNote(@ModelAttribute("note") Note note) {
-        noteService.add(note);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            String username = authentication.getName();
+            User user = userService.findUserByUsername(username);
+            noteService.add(note, user.getId());
+        }
         return "redirect:/home";
     }
 
@@ -86,8 +108,13 @@ public class NoteController {
     }
 
     @GetMapping("/json/{id}")
-    public String exportToJson(@PathVariable("id") int id) {
-        noteService.exportToJson(id);
+    public String exportToJson(@PathVariable("id") int id, RedirectAttributes attributes) {
+        boolean exported = noteService.exportToJson(id);
+        if (exported) {
+            attributes.addFlashAttribute("export", "Exported successfully");
+        } else {
+            attributes.addFlashAttribute("export", "Export error");
+        }
         return "redirect:/home";
     }
 
@@ -100,10 +127,20 @@ public class NoteController {
         }
         try {
             String jsonString = new String(file.getBytes(), StandardCharsets.UTF_8);
-            noteService.importFromJson(jsonString);
-            attributes.addFlashAttribute("message", "Added successfully");
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (!(authentication instanceof AnonymousAuthenticationToken)) {
+                String username = authentication.getName();
+                User user = userService.findUserByUsername(username);
+                boolean added = noteService.importFromJson(jsonString, user.getId());
+                if (added) {
+                    attributes.addFlashAttribute("message", "Added successfully");
+                } else {
+                    attributes.addFlashAttribute("message", "Can't add note of another user");
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
+            attributes.addFlashAttribute("message", "Import error");
         }
 
         return "redirect:/home";
