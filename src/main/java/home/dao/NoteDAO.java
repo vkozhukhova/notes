@@ -1,7 +1,6 @@
 package home.dao;
 
-import home.model.Note;
-import home.model.NoteHistory;
+import home.model.*;
 
 import java.util.List;
 
@@ -14,4 +13,5 @@ public interface NoteDAO {
     List<NoteHistory> historicalNotes(int id);
     boolean exportToJson(int id);
     boolean importFromJson(String jsonString, long userId);
+    void addPermissions(UserPermissions userPermission);
 }

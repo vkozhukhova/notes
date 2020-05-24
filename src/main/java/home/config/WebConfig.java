@@ -1,19 +1,23 @@
 package home.config;
 
+import home.model.Note;
+import home.model.User;
+import home.service.NoteService;
+import home.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.unit.DataSize;
-import org.springframework.util.unit.DataUnit;
+import org.springframework.format.Formatter;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
-import javax.servlet.MultipartConfigElement;
+import java.text.ParseException;
 import java.util.Locale;
 
 @Configuration
@@ -41,7 +45,41 @@ public class WebConfig extends WebMvcConfigurationSupport {
         ir.addInterceptor(localeChangeInterceptor());
     }
 
+   /* @Autowired
+    UserService userService;
+    @Autowired
+    NoteService noteService;
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+
+        registry.addFormatter(new Formatter<User>() {
 
 
+            @Override
+            public User parse(String s, Locale locale) throws ParseException {
+                return userService.findUserByUsername(s);
+            }
+
+            @Override
+            public String print(User user, Locale locale) {
+                return (user != null ? user.getUsername() : "");
+            }
+        });
+
+        registry.addFormatter(new Formatter<Note>() {
+
+
+            @Override
+            public Note parse(String s, Locale locale) throws ParseException {
+                return noteService.getById(Integer.parseInt(s));
+            }
+
+            @Override
+            public String print(Note note, Locale locale) {
+                return (note != null ? String.valueOf(note.getId()) : "");
+            }
+        });
+    }*/
 
 }

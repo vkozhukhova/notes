@@ -1,28 +1,21 @@
 package home.controllers;
 
-import home.model.Note;
-import home.model.NoteHistory;
-import home.model.User;
+import home.model.*;
 import home.service.NoteService;
-import home.service.UserDetailsServiceImpl;
 import home.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,11 +29,9 @@ public class NoteController {
 
     @ModelAttribute("notesList")
     public List<Note> showNotes() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            String username = authentication.getName();
-            User user = userService.findUserByUsername(username);
-            return this.noteService.allNotes( user.getId());
+        User currentUser = getCurrentUser();
+        if (currentUser != null) {
+            return this.noteService.allNotes(currentUser.getId());
         } else {
             return Collections.emptyList();
         }
@@ -91,11 +82,9 @@ public class NoteController {
 
     @PostMapping("/add")
     public String addNote(@ModelAttribute("note") Note note) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            String username = authentication.getName();
-            User user = userService.findUserByUsername(username);
-            noteService.add(note, user.getId());
+        User currentUser = getCurrentUser();
+        if (currentUser != null) {
+            noteService.add(note, currentUser.getId());
         }
         return "redirect:/home";
     }
@@ -127,15 +116,13 @@ public class NoteController {
         }
         try {
             String jsonString = new String(file.getBytes(), StandardCharsets.UTF_8);
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (!(authentication instanceof AnonymousAuthenticationToken)) {
-                String username = authentication.getName();
-                User user = userService.findUserByUsername(username);
-                boolean added = noteService.importFromJson(jsonString, user.getId());
+            User currentUser = getCurrentUser();
+            if (currentUser != null) {
+                boolean added = noteService.importFromJson(jsonString, currentUser.getId());
                 if (added) {
                     attributes.addFlashAttribute("message", "Added successfully");
                 } else {
-                    attributes.addFlashAttribute("message", "Can't add note of another user");
+                    attributes.addFlashAttribute("message", "Can't add note. Check file to import");
                 }
             }
         } catch (IOException e) {
@@ -144,6 +131,48 @@ public class NoteController {
         }
 
         return "redirect:/home";
+    }
+
+    @GetMapping(value = "/permissions")
+    public String addPermissions(Model model) {
+        User currentUser = getCurrentUser();
+        if (currentUser != null) {
+            UserPermissions userPermissions = new UserPermissions();
+            model.addAttribute("userPermissions", userPermissions);
+            List<User> users =  userService.getUsersExceptCurrent(currentUser);
+            model.addAttribute("users", users);
+            return "permissions";
+        }
+        return "redirect:/home";
+    }
+
+    @PostMapping(value = "/permissions")
+    public String savePermissions(@ModelAttribute("userPermissions") UserPermissions userPermissions,
+                          BindingResult bindingResult, Model model, RedirectAttributes attributes) {
+        if (bindingResult.hasErrors()) {
+            return "permissions";
+        }
+        try {
+            noteService.addPermissions(userPermissions);
+        } catch (Exception e) {
+            attributes.addFlashAttribute("errormsg","Error ocurred. Maybe not unique index for User, note and permission");
+        } finally {
+            User currentUser = getCurrentUser();
+            if (currentUser != null) {
+                List<User> users =  userService.getUsersExceptCurrent(currentUser);
+                model.addAttribute("users", users);
+            }
+        }
+        return "permissions";
+    }
+
+    public User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            String username = authentication.getName();
+            return userService.findUserByUsername(username);
+        }
+        return null;
     }
 
 

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+    <title th:text="#{title.application}">Notes WebApp</title>
+</head>
+<body>
+<div sec:authorize="isAuthenticated()">
+    <span th:text="#{title.authenticated}"> </span>
+    <span  sec:authentication="name"></span></div>
+
+<form th:action="@{/logout}" method="get">
+    <button name="logout" type="Submit">Logout</button>
+</form>
+
+<form action="#" th:action="@{/permissions}" method="post" th:object="${userPermissions}">
+    <p><input type="hidden" name="id" th:field="*{id}"/></p>
+    <div>
+        <select th:field="*{user.id}"  id="dropUser">
+            <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.username}"></option>
+        </select>
+    </div>
+    <div>
+        <select th:field="*{note.id}"  id="dropNote">
+            <option th:each="note : ${notesList}" th:value="${note.id}" th:text="${note.header}"></option>
+        </select>
+    </div>
+    <div><select th:field="*{permission}" id="dropPermission">
+        <option th:each="permission : ${T(home.model.Permission).values()}"
+                th:value="${permission}" th:text="${permission}"></option>
+    </select>
+    </div>
+
+    <div><input type="submit" th:value="#{button.submit}"/></div>
+</form>
+
+<div><b th:text="${errormsg}" th:if="${errormsg ne null}"></b></div>
+
+<p><a th:href="@{/home}" th:text="#{title.application}">Main</a></p>
+
+</body>
+</html>

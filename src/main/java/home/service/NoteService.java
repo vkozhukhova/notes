@@ -1,8 +1,8 @@
 package home.service;
 
-import home.model.Note;
-import home.model.NoteHistory;
+import home.model.*;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 public interface NoteService {
@@ -14,4 +14,5 @@ public interface NoteService {
     List<NoteHistory> historicalNotes(int id);
     boolean exportToJson(int id);
     boolean importFromJson(String jsonString, long userId);
+    void addPermissions(UserPermissions userPermission);
 }

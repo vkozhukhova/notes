@@ -6,9 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import home.model.Note;
-import home.model.NoteHistory;
-import home.model.User;
+import home.model.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,6 +146,11 @@ public class NoteDAOImpl implements NoteDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public void addPermissions(UserPermissions userPermission) {
+        entityManager.persist(userPermission);
     }
 
 }

@@ -2,13 +2,13 @@ package home.service;
 
 import home.dao.NoteDAO;
 
-import home.model.Note;
+import home.model.*;
 
-import home.model.NoteHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 @Service
@@ -64,5 +64,12 @@ public class NoteServiceImpl implements NoteService {
     public boolean importFromJson(String jsonString, long userId) {
         return noteDAO.importFromJson(jsonString, userId);
     }
+
+    @Override
+    @Transactional
+    public void addPermissions(UserPermissions userPermission) {
+        noteDAO.addPermissions(userPermission);
+    }
+
 
 }

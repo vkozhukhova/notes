@@ -49,6 +49,10 @@ public class Note {
     @JoinColumn(name = "owner_id")
     private User user;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "note", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<UserPermissions> userPermissions = new ArrayList<>();
+
     public String getHeader() {
         return header;
     }
