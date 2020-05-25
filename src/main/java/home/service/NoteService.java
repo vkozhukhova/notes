@@ -4,6 +4,7 @@ import home.model.*;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
+import java.util.Map;
 
 public interface NoteService {
     List<Note> allNotes(long userId);
@@ -15,4 +16,7 @@ public interface NoteService {
     boolean exportToJson(int id);
     boolean importFromJson(String jsonString, long userId);
     void addPermissions(UserPermissions userPermission);
+    Map<Note, Permission> getOtherNotes(long userId);
+    List<User> getViewUsersList(int id);
+    List<User> getEditUsersList(int id);
 }

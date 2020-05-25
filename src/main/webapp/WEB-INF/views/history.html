@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
     <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
     <title th:text="#{title.history}">Notes WebApp</title>
 </head>
 <body>
+<div sec:authorize="isAuthenticated()">
+    <span th:text="#{title.authenticated}"> </span>
+    <span  sec:authentication="name"></span></div>
+
+<form th:action="@{/logout}" method="get">
+    <button name="logout" type="Submit" th:text="#{button.logout}">Logout</button>
+</form>
 
 <div th:if="${not #lists.isEmpty(notesHistoryList)}">
 
@@ -37,7 +45,7 @@
     <h2 th:text="#{title.nohistory}">List of Notes</h2>
 </div>
 
-<p><a th:href="@{/home}" th:text="#{title.application}">Main</a></p>
+<p><a th:href="@{/home}" th:text="#{title.main}">Main</a></p>
 
 </body>
 </html>

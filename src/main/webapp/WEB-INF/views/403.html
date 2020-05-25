@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+    <title th:text="#{title.application}">Notes WebApp</title>
+</head>
+<body>
+<div sec:authorize="isAuthenticated()">
+    <span th:text="#{title.authenticated}"> </span>
+    <span  sec:authentication="name"></span></div>
+
+<form th:action="@{/logout}" method="get">
+    <button name="logout" type="Submit">Logout</button>
+</form>
+
+<b><p th:text="#{title.noRights}"></p></b>
+
+<p><a th:href="@{/home}" th:text="#{title.main}">Main</a></p>
+
+</body>
+</html>

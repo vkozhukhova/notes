@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class NoteServiceImpl implements NoteService {
@@ -71,5 +72,21 @@ public class NoteServiceImpl implements NoteService {
         noteDAO.addPermissions(userPermission);
     }
 
+    @Override
+    @Transactional
+    public Map<Note, Permission> getOtherNotes(long userId) {
+        return noteDAO.getOtherNotes(userId);
+    }
 
+    @Override
+    @Transactional
+    public List<User> getViewUsersList(int id) {
+        return noteDAO.getViewUsersList(id);
+    }
+
+    @Override
+    @Transactional
+    public List<User> getEditUsersList(int id) {
+        return noteDAO.getEditUsersList(id);
+    }
 }

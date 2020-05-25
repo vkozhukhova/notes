@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+    <title th:text="#{title.application}">Notes WebApp</title>
+</head>
+<body>
+<div sec:authorize="isAuthenticated()">
+    <span th:text="#{title.authenticated}"> </span>
+    <span  sec:authentication="name"></span></div>
+
+<form th:action="@{/logout}" method="get">
+    <button name="logout" type="Submit" th:text="#{button.logout}">Logout</button>
+</form>
+
+<div th:if="${not #maps.isEmpty(otherNotesMap)}">
+
+<div th:unless="${#maps.isEmpty(otherNotesMap)}">
+
+    <table>
+        <thead>
+        <tr>
+            <th th:text="#{note.id}">Id</th>
+            <th th:text="#{note.header}">Header</th>
+            <th th:text="#{note.text}">Text</th>
+            <th th:text="#{note.creation}">Creation DateTime</th>
+            <th th:text="#{note.edition}">Last Edition DateTime</th>
+            <th th:text="#{note.owner}">Owner</th>
+            <th th:text="#{note.action}">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="mapEntry : ${otherNotesMap}">
+            <td th:text="${mapEntry.key.id}"></td>
+            <td th:text="${mapEntry.key.header}"></td>
+            <td th:text="${mapEntry.key.text}"></td>
+            <td th:text="${#temporals.format(mapEntry.key.creationDateTime, 'dd-MM-yyyy HH:mm:ss')}"></td>
+            <td th:text="${#temporals.format(mapEntry.key.lastEditionDateTime, 'dd-MM-yyyy HH:mm:ss')}"></td>
+            <td th:text="${mapEntry.key.owner.username}"></td>
+            <td>
+                <a th:href="@{'/history/' + ${mapEntry.key.id}}" th:text="#{note.history}">history</a>
+                <a th:if="${mapEntry.value == T(home.model.Permission).EDITION}" th:href="@{'/edit/' + ${mapEntry.key.id}}" th:text="#{note.edit}" >edit</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</div>
+
+<div th:if="${#maps.isEmpty(otherNotesMap)}">
+    <h2 th:text="#{title.noOtherNotes}">No other notes</h2>
+</div>
+
+<p><a th:href="@{/home}" th:text="#{title.main}">Main</a></p>
+
+</body>
+</html>

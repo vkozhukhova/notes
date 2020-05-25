@@ -3,6 +3,7 @@ package home.dao;
 import home.model.*;
 
 import java.util.List;
+import java.util.Map;
 
 public interface NoteDAO {
     List<Note> allNotes(long userId);
@@ -14,4 +15,7 @@ public interface NoteDAO {
     boolean exportToJson(int id);
     boolean importFromJson(String jsonString, long userId);
     void addPermissions(UserPermissions userPermission);
+    Map<Note, Permission> getOtherNotes(long userId);
+    List<User> getViewUsersList(int id);
+    List<User> getEditUsersList(int id);
 }

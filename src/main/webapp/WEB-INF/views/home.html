@@ -12,7 +12,7 @@
      <span  sec:authentication="name"></span></div>
 
 <form th:action="@{/logout}" method="get">
-    <button name="logout" type="Submit">Logout</button>
+    <button name="logout" type="Submit" th:text="#{button.logout}">Logout</button>
 </form>
 
 
@@ -63,8 +63,11 @@
             <p><button type="submit" th:text="#{button.import}">Import</button></p>
         </form>
     </div>
-<h2>Permissions</h2>
-<p><a th:href="@{/permissions}">Add permissions</a></p>
+<h2 th:text="#{user.permissions}">Permissions</h2>
+<p><a th:href="@{/permissions}" th:text="#{user.addPermissions}">Add permissions</a></p>
+
+<h2 th:text="#{user.otherNotes}">Other notes</h2>
+<p><a th:href="@{/other}" th:text="#{user.lookOtherNotes}">Look for other notes</a></p>
 
 </body>
 </html>

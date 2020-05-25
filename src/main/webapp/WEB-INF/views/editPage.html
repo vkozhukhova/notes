@@ -1,11 +1,20 @@
 <!DOCTYPE html>
 
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
     <meta charset="UTF-8">
     <title th:text="#{title.editpage}">Notes Edit Page</title>
 </head>
 <body>
+<div sec:authorize="isAuthenticated()">
+    <span th:text="#{title.authenticated}"> </span>
+    <span  sec:authentication="name"></span></div>
+
+<form th:action="@{/logout}" method="get">
+    <button name="logout" type="Submit" th:text="#{button.logout}">Logout</button>
+</form>
+
 <h1 th:text="#{title.edit}">Edit note</h1>
 <form action="#" th:action="${#strings.isEmpty(note.header)}? @{/add}: @{/edit}" th:object="${note}" method="post"
  >
@@ -17,5 +26,7 @@
     <p><input type="hidden" name="lastEditionDateTime" th:field="*{lastEditionDateTime}"/></p>
     <p><input type="submit" th:value="#{button.submit}"/></p>
 </form>
+
+<p><a th:href="@{/home}" th:text="#{title.main}">Main</a></p>
 </body>
 </html>

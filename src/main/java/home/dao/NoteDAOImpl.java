@@ -1,33 +1,24 @@
 package home.dao;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import home.model.*;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @Repository
 public class NoteDAOImpl implements NoteDAO {
@@ -44,7 +35,7 @@ public class NoteDAOImpl implements NoteDAO {
 
         //Session session = sessionFactory.getCurrentSession();
 
-        return entityManager.createQuery("from Note where user.id=:owner_id")
+        return entityManager.createQuery("from Note where owner.id=:owner_id")
                     .setParameter("owner_id", userId)
                     .getResultList();
     }
@@ -56,7 +47,7 @@ public class NoteDAOImpl implements NoteDAO {
         note.setCreationDateTime(LocalDateTime.now());
         note.setLastEditionDateTime(LocalDateTime.now());
         User user = entityManager.find(User.class, userId);
-        note.setUser(user);
+        note.setOwner(user);
         entityManager.persist(note);
         //session.save(note);
     }
@@ -151,6 +142,46 @@ public class NoteDAOImpl implements NoteDAO {
     @Override
     public void addPermissions(UserPermissions userPermission) {
         entityManager.persist(userPermission);
+    }
+
+    @Override
+    public Map<Note, Permission> getOtherNotes(long userId) {
+        List<Object[]> resultList = entityManager.createQuery("select n.id, n.header, " +
+                "n.text, n.creationDateTime, n.lastEditionDateTime, n.owner, p.permission " +
+                "from Note n join UserPermissions p on n.id=p.note.id " +
+                "where p.user.id=:userId").setParameter("userId", userId).getResultList();
+        Map<Note, Permission> notePermissionMap = new HashMap<>();
+        resultList.forEach(row -> {
+            Note note = new Note();
+            note.setId((Integer) row[0]);
+            note.setHeader((String) row[1]);
+            note.setText((String) row[2]);
+            note.setCreationDateTime((LocalDateTime) row[3]);
+            note.setLastEditionDateTime((LocalDateTime) row[4]);
+            note.setOwner((User)row[5]);
+            Permission permission = (Permission) row[6];
+            notePermissionMap.put(note, permission);
+        });
+        return notePermissionMap;
+    }
+
+    @Override
+    public List<User> getViewUsersList(int id) {
+        return entityManager.createQuery("select u from User u " +
+                "join UserPermissions p on u.id=p.user.id " +
+                "where p.note.id=:noteId").setParameter("noteId", id).getResultList();
+
+    }
+
+    @Override
+    public List<User> getEditUsersList(int id) {
+        return entityManager.createQuery("select u from User u " +
+                "join UserPermissions p on u.id=p.user.id " +
+                "where p.note.id=:noteId and p.permission=:permission")
+                .setParameter("noteId", id)
+                .setParameter("permission", Permission.EDITION)
+                .getResultList();
+
     }
 
 }
