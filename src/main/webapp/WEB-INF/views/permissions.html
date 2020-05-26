@@ -17,17 +17,18 @@
 
 <form action="#" th:action="@{/permissions}" method="post" th:object="${userPermissions}">
     <p><input type="hidden" name="id" th:field="*{id}"/></p>
-    <p>
+    <p><label th:text="#{user.chooseUser}"></label>
         <select th:field="*{user.id}"  id="dropUser">
             <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.username}"></option>
         </select>
     </p>
-    <p>
+    <p><label th:text="#{user.chooseNote}"></label>
         <select th:field="*{note.id}"  id="dropNote">
             <option th:each="note : ${notesList}" th:value="${note.id}" th:text="${note.header}"></option>
         </select>
     </p>
-    <p><select th:field="*{permission}" id="dropPermission">
+    <p><label th:text="#{user.choosePermission}"></label>
+        <select th:field="*{permission}" id="dropPermission">
         <option th:each="permission : ${T(home.model.Permission).values()}"
                 th:value="${permission}" th:text="${permission}"></option>
     </select>
