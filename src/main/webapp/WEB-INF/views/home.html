@@ -4,70 +4,96 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
     <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+    <!-- Required meta tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <title th:text="#{title.application}">Notes WebApp</title>
 </head>
 <body>
-<div sec:authorize="isAuthenticated()">
-    <span th:text="#{title.authenticated}"> </span>
-     <span  sec:authentication="name"></span></div>
+<div class="container">
+    <div class="row">
+        <div sec:authorize="isAuthenticated()">
+            <span th:text="#{title.authenticated}"> </span>
+            <span class="badge badge-primary"  sec:authentication="name"></span></div>
+    </div>
+    <div class="row">
+        <form th:action="@{/logout}" method="get">
+            <button name="logout" type="Submit" th:text="#{button.logout}" class="btn btn-primary btn-sm float-right">Logout</button>
+        </form>
+    </div>
 
-<form th:action="@{/logout}" method="get">
-    <button name="logout" type="Submit" th:text="#{button.logout}">Logout</button>
-</form>
+    <div class="row">
+        <nav class="nav">
+            <a class="nav-link" th:href="@{/add}" th:text="#{note.add}">Add new note</a>
+            <a class="nav-link" th:href="@{/permissions}" th:text="#{user.addPermissions}">Add permissions</a>
+            <a class="nav-link" th:href="@{/other}" th:text="#{user.lookOtherNotes}">Look for other notes</a>
+            <a class="nav-link" th:href="@{/fromjson}" th:text="#{button.import}">Import</a>
+        </nav>
+    </div>
 
+    <p align="right"><a th:href="@{'?lang=en'}">English</a> | <a th:href="@{'?lang=ru'}">Русский</a></p>
 
-<div class="noteslist" th:unless="${#lists.isEmpty(notesList)}">
+    <div class="noteslist" th:unless="${#lists.isEmpty(notesList)}">
 
-    <h2 th:text="#{title.list}">List of Notes</h2>
+            <h2 class="text-center" th:text="#{title.list}">List of Notes</h2>
 
-<p><a th:href="@{'?lang=en'}">English</a> | <a th:href="@{'?lang=ru'}">Русский</a></p>
+        <div class="row">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th th:text="#{note.id}">Id</th>
+                    <th th:text="#{note.header}">Header</th>
+                    <th th:text="#{note.text}">Text</th>
+                    <th th:text="#{note.creation}">Creation DateTime</th>
+                    <th th:text="#{note.edition}">Last Edition DateTime</th>
+                    <th th:text="#{note.action}">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="n : ${notesList}">
+                    <td th:text="${n.id}"></td>
+                    <td th:text="${n.header}"></td>
+                    <td th:text="${n.text}"></td>
+                    <td th:text="${#temporals.format(n.creationDateTime, 'dd-MM-yyyy HH:mm:ss')}"></td>
+                    <td th:text="${#temporals.format(n.lastEditionDateTime, 'dd-MM-yyyy HH:mm:ss')}"></td>
+                    <td>
+                        <a th:href="@{'/edit/' + ${n.id}}" th:text="#{note.edit}">edit</a>
+                        <a th:href="@{'/delete/' + ${n.id}}" th:text="#{note.delete}">delete</a>
+                        <br>
+                        <a th:href="@{'/history/' + ${n.id}}" th:text="#{note.history}">history</a>
+                        <a th:href="@{'/tojson/' + ${n.id}}" th:text="#{note.json}">tojson</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
 
-    <table>
-        <thead>
-        <tr>
-            <th th:text="#{note.id}">Id</th>
-            <th th:text="#{note.header}">Header</th>
-            <th th:text="#{note.text}">Text</th>
-            <th th:text="#{note.creation}">Creation DateTime</th>
-            <th th:text="#{note.edition}">Last Edition DateTime</th>
-            <th th:text="#{note.action}">Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="n : ${notesList}">
-            <td th:text="${n.id}"></td>
-            <td th:text="${n.header}"></td>
-            <td th:text="${n.text}"></td>
-            <td th:text="${#temporals.format(n.creationDateTime, 'dd-MM-yyyy HH:mm:ss')}"></td>
-            <td th:text="${#temporals.format(n.lastEditionDateTime, 'dd-MM-yyyy HH:mm:ss')}"></td>
-            <td>
-                <a th:href="@{'/edit/' + ${n.id}}" th:text="#{note.edit}">edit</a>
-                <a th:href="@{'/delete/' + ${n.id}}" th:text="#{note.delete}">delete</a>
-                <a th:href="@{'/history/' + ${n.id}}" th:text="#{note.history}">history</a>
-                <a th:href="@{'/json/' + ${n.id}}" th:text="#{note.json}">history</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+        <b><p align="center" th:text="${export}" th:if="${export ne null}"></p></b>
+    </div>
+    <!--    <h2 th:text="#{title.add}">Add</h2>-->
 
-    <b><p align="center" th:text="${export}" th:if="${export ne null}"></p></b>
 </div>
-    <h2 th:text="#{title.add}">Add</h2>
-    <a th:href="@{/add}" th:text="#{note.add}">Add new note</a>
-
     <h2 th:text="#{button.import}">Import</h2>
     <b><p th:text="${message}" th:if="${message ne null}"></p></b>
     <div>
         <form method="post" th:action="@{/import}" enctype="multipart/form-data">
-            <div><input type="file" name="file" /></div>
+            <div class="form-group">
+                <input type="file" name="file" />
+            </div>
             <p><button type="submit" th:text="#{button.import}">Import</button></p>
         </form>
     </div>
-<h2 th:text="#{user.permissions}">Permissions</h2>
-<p><a th:href="@{/permissions}" th:text="#{user.addPermissions}">Add permissions</a></p>
+<!--<h2 th:text="#{user.permissions}">Permissions</h2>-->
 
-<h2 th:text="#{user.otherNotes}">Other notes</h2>
-<p><a th:href="@{/other}" th:text="#{user.lookOtherNotes}">Look for other notes</a></p>
+
+<!--<h2 th:text="#{user.otherNotes}">Other notes</h2>-->
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
 </body>
 </html>

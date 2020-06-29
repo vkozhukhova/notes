@@ -6,6 +6,9 @@ import home.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -73,19 +76,21 @@ public class NoteController {
 
         List<NoteHistory> notesHistoryList = noteService.historicalNotes(id);
         Note note = noteService.getById(id);
-        User currentUser = getCurrentUser();
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!! START !!!!!!!!!!!");
-        List<User> usersViewList = noteService.getViewUsersList(id);
-        for (User u : usersViewList) {
+/*        for (User u : usersViewList) {
             System.out.println(u.getUsername());
-        }
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!! FINISH !!!!!!!!!!!");
-        usersViewList.add(note.getOwner());
-        if (usersViewList.contains(currentUser)) {
-            model.addAttribute("notesHistoryList", notesHistoryList);
-            model.addAttribute("noteId", id);
-            model.addAttribute("noteCreated", note.getCreationDateTime());
-            return "history";
+        }*/
+        if (note != null) {
+            User currentUser = getCurrentUser();
+            List<User> usersViewList = noteService.getViewUsersList(id);
+            usersViewList.add(note.getOwner());
+            if (usersViewList.contains(currentUser)) {
+                model.addAttribute("notesHistoryList", notesHistoryList);
+                model.addAttribute("noteId", id);
+                model.addAttribute("noteCreated", note.getCreationDateTime());
+                return "history";
+            } else {
+                return "403";
+            }
         } else {
             return "403";
         }
@@ -110,6 +115,13 @@ public class NoteController {
         noteService.edit(note);
         return "redirect:/home";
     }
+
+/*    @MessageMapping("/edit/{id}")
+    @SendTo("/topic/edit/{id}")
+    public Note collaborate(@DestinationVariable String id) throws Exception {
+        return new Note();
+    }*/
+
 
     @GetMapping(value = "/add")
     public String addPage(Model model) {
@@ -139,7 +151,7 @@ public class NoteController {
         }
     }
 
-    @GetMapping("/json/{id}")
+    @GetMapping("/tojson/{id}")
     public String exportToJson(@PathVariable("id") int id, RedirectAttributes attributes) {
         User currentUser = getCurrentUser();
         if (currentUser.getId() == noteService.getById(id).getOwner().getId()) {

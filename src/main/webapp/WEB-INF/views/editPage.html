@@ -4,29 +4,68 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
     <meta charset="UTF-8">
+    <!-- Required meta tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
     <title th:text="#{title.editpage}">Notes Edit Page</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.0.3/sockjs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<!--    <script src="../../js/app.js" th:src="@{/js/app.js}"></script>-->
 </head>
 <body>
-<div sec:authorize="isAuthenticated()">
-    <span th:text="#{title.authenticated}"> </span>
-    <span  sec:authentication="name"></span></div>
+<div class="container">
+<!--<body onload="disconnect();">-->
+    <div class="row">
+        <div sec:authorize="isAuthenticated()">
+            <span th:text="#{title.authenticated}"> </span>
+            <span class="badge badge-primary" sec:authentication="name"></span></div>
+    </div>
+    <div class="row">
+        <form th:action="@{/logout}" method="get">
+            <button name="logout" type="Submit" th:text="#{button.logout}" class="btn btn-primary btn-sm">Logout</button>
+        </form>
+    </div>
+    <br>
+<h3 th:text="${#strings.isEmpty(note.header)}? #{title.add}: #{title.edit}">Edit note</h3>
+    <br>
+<!--<div>
+    <button id="connect" onclick="connect();" >Connect</button>
+    <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
+</div>-->
 
-<form th:action="@{/logout}" method="get">
-    <button name="logout" type="Submit" th:text="#{button.logout}">Logout</button>
-</form>
-
-<h1 th:text="#{title.edit}">Edit note</h1>
 <form action="#" th:action="${#strings.isEmpty(note.header)}? @{/add}: @{/edit}" th:object="${note}" method="post"
  >
 
     <p th:if="${not #strings.isEmpty(note.header)}"><input type="hidden" name="id" th:field="*{id}"/></p>
-    <p><label th:text="#{note.header}"></label><input type="text" name="header" th:field="*{header}" /></p>
-    <p><label th:text="#{note.text}"></label><input type="text" name="text" th:field="*{text}" /></p>
+    <div class="row">
+        <div class="col-md-auto">
+        <p><label th:text="#{note.header}"></label></p>
+        </div>
+        <div class="col-md-auto">
+        <p> <input type="text" id="header" name="header" th:field="*{header}"  /></p>
+        </div>
+        <!--    onkeypress="sendNote();"-->
+    </div>
+    <div class="row">
+        <div class="col-md-auto">
+            <p><label th:text="#{note.text}"></label></p></div>
+        <div class="col-md-auto"><p><textarea id="text" name="text" rows="10" cols="45" th:field="*{text}"></textarea></p>
+        </div>
+    </div>
     <p><input type="hidden" name="creationDateTime" th:field="*{creationDateTime}"/></p>
     <p><input type="hidden" name="lastEditionDateTime" th:field="*{lastEditionDateTime}"/></p>
-    <p><input type="submit" th:value="#{button.submit}"/></p>
+    <p><input type="submit" th:value="#{button.submit}" class="btn btn-primary"/></p>
 </form>
 
-<p><a th:href="@{/home}" th:text="#{title.main}">Main</a></p>
+<div class="row">
+    <p><a th:href="@{/home}" th:text="#{title.main}">Main</a></p></div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
 </body>
 </html>

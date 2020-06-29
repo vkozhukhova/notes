@@ -4,25 +4,36 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
     <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+    <!-- Required meta tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
     <title th:text="#{title.history}">Notes WebApp</title>
 </head>
 <body>
+<div class="container">
+    <div class="row">
 <div sec:authorize="isAuthenticated()">
     <span th:text="#{title.authenticated}"> </span>
-    <span  sec:authentication="name"></span></div>
-
+    <span class="badge badge-primary" sec:authentication="name"></span></div>
+    </div>
+        <div class="row">
 <form th:action="@{/logout}" method="get">
-    <button name="logout" type="Submit" th:text="#{button.logout}">Logout</button>
+    <button name="logout" type="Submit" th:text="#{button.logout}" class="btn btn-primary">Logout</button>
 </form>
+        </div>
+    <br>
 
 <div th:if="${not #lists.isEmpty(notesHistoryList)}">
 
 <div class="notesHistoryList" th:unless="${#lists.isEmpty(notesHistoryList)}">
 
-    <h2 th:text="#{title.historylist}">List of Notes</h2>
-    <p th:text="'id = ' + ${noteId} + ', created ' + ${#temporals.format(noteCreated, 'dd-MM-yyyy HH:mm:ss')}"></p>
-
-    <table>
+    <h2 class="text-center" th:text="#{title.historylist}">List of Notes</h2>
+    <p class="text-center" th:text="'id = ' + ${noteId} + ', created ' + ${#temporals.format(noteCreated, 'dd-MM-yyyy HH:mm:ss')}"></p>
+    <div class="row">
+    <table class="table table-striped">
         <thead>
         <tr>
             <th th:text="#{note.header}">Header</th>
@@ -38,14 +49,18 @@
         </tr>
         </tbody>
     </table>
-
+    </div>
 </div>
 </div>
 <div th:if="${#lists.isEmpty(notesHistoryList)}">
-    <h2 th:text="#{title.nohistory}">List of Notes</h2>
+    <h3 th:text="#{title.nohistory}">List of Notes</h3>
 </div>
-
-<p><a th:href="@{/home}" th:text="#{title.main}">Main</a></p>
+<div class="row">
+<p><a th:href="@{/home}" th:text="#{title.main}">Main</a></p></div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
 </body>
 </html>

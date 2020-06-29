@@ -68,7 +68,6 @@ public class NoteDAOImpl implements NoteDAO {
 
     @Override
     public void edit(Note newNote) {
-        //Session session = entityManager.unwrap(Session.class);
         //Session session = sessionFactory.getCurrentSession();
         Note oldNote = entityManager.find(Note.class, newNote.getId());
         //Note oldNote = session.find(Note.class, newNote.getId());
