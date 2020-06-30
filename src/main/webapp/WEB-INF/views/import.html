@@ -32,26 +32,30 @@
 
     <form action="#" th:action="@{/import}" th:object="${importDetails}" method="post">
 
-        <div class="row">
-            <label th:text="#{note.import}">Import From</label>
+        <div class="row" >
             <div class="col-md-auto">
+                <label th:text="#{note.import}">Import From</label>
                 <select class="custom-select" th:field="*{importType}" >
                     <option th:each="type : ${T(home.model.ImportType).values()}" th:value="${type}"
                             th:text="${type}">
 
                     </option>
                 </select>
-
             </div>
         </div>
+        <br>
         <div class="row">
             <div class="col-md-auto">
-                <textarea id="imported" name="imported" rows="10" cols="45" th:field="*{importString}"></textarea>
+                <textarea id="imported" name="imported" rows="10" cols="45" th:field="*{importString}" placeholder="JSON / XML"></textarea>
             </div>
         </div>
 
         <p><input type="submit" th:value="#{button.import}" class="btn btn-primary"/></p>
     </form>
+
+    <div class="row">
+        <p><a th:href="@{/home}" th:text="#{title.main}">Main</a></p>
+    </div>
 
 </div>
 

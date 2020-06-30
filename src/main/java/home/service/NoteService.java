@@ -15,6 +15,8 @@ public interface NoteService {
     List<NoteHistory> historicalNotes(int id);
     String exportToJson(int id);
     boolean importFromJson(String jsonString, long userId);
+    String exportToXml(int id);
+    boolean importFromXml(String xmlString, long userId);
     void addPermissions(UserPermissions userPermission);
     Map<Note, Permission> getOtherNotes(long userId);
     List<User> getViewUsersList(int id);

@@ -15,10 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class NoteController {
@@ -40,11 +37,6 @@ public class NoteController {
             return Collections.emptyList();
         }
 
-    }
-
-    @ModelAttribute("importTypes")
-    public List<String> importTypes() {
-        return Arrays.asList("JSON", "XML");
     }
 
     @ModelAttribute("otherNotesMap")
@@ -177,6 +169,23 @@ public class NoteController {
         }
     }
 
+    @GetMapping("/toxml/{id}")
+    public String exportToXml(@PathVariable("id") int id, Model model){
+        User currentUser = getCurrentUser();
+        if (currentUser.getId() == noteService.getById(id).getOwner().getId()) {
+            String exported = noteService.exportToXml(id);
+            if (exported != null) {
+                model.addAttribute("exported", exported);
+            } else {
+                String msg = messageSource.getMessage("note.exportFail", null, LocaleContextHolder.getLocale());
+                model.addAttribute("exported", msg);
+            }
+            return "export";
+        } else {
+            return "403";
+        }
+    }
+
 /*    @PostMapping("/import")
     public String importFromJson(@RequestParam("file") MultipartFile file, RedirectAttributes attributes) {
         // check if file is empty
@@ -221,10 +230,9 @@ public class NoteController {
             if (importDetails.getImportType() == ImportType.JSON) {
                 noteService.importFromJson(importDetails.getImportString(), currentUser.getId());
             } else if (importDetails.getImportType() == ImportType.XML) {
-                //TODO
+                noteService.importFromXml(importDetails.getImportString(), currentUser.getId());
             }
         }
-
         return "redirect:/home";
     }
 
@@ -280,6 +288,7 @@ public class NoteController {
             String username = authentication.getName();
             return userService.findUserByUsername(username);
         }
+
         return null;
     }
 

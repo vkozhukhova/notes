@@ -63,7 +63,9 @@
                         <a th:href="@{'/delete/' + ${n.id}}" th:text="#{note.delete}">delete</a>
                         <br>
                         <a th:href="@{'/history/' + ${n.id}}" th:text="#{note.history}">history</a>
+                        <br>
                         <a target="_blank" rel="noopener noreferrer" th:href="@{'/tojson/' + ${n.id}}" th:text="#{note.json}">tojson</a>
+                        <a target="_blank" rel="noopener noreferrer" th:href="@{'/toxml/' + ${n.id}}" th:text="#{note.xml}">toxml</a>
                     </td>
                 </tr>
                 </tbody>

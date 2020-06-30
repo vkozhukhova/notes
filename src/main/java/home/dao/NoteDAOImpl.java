@@ -4,6 +4,7 @@ package home.dao;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import home.model.*;
 import org.springframework.stereotype.Repository;
@@ -134,6 +135,36 @@ public class NoteDAOImpl implements NoteDAO {
             add(note, userId);
             return true;
         } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public String exportToXml(int id) {
+        Note note = getById(id);
+
+        XmlMapper mapper = new XmlMapper();
+        mapper.registerModule(new JavaTimeModule());
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
+        try {
+            return ow.writeValueAsString(note);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public boolean importFromXml(String xmlString, long userId) {
+        XmlMapper mapper = new XmlMapper();
+        mapper.registerModule(new JavaTimeModule());
+        Note note = null;
+        try {
+            note = mapper.readValue(xmlString, Note.class);
+            add(note, userId);
+            return true;
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
             return false;
         }

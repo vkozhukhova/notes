@@ -68,6 +68,18 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     @Transactional
+    public String exportToXml(int id) {
+        return noteDAO.exportToXml(id);
+    }
+
+    @Override
+    @Transactional
+    public boolean importFromXml(String xmlString, long userId) {
+        return noteDAO.importFromXml(xmlString, userId);
+    }
+
+    @Override
+    @Transactional
     public void addPermissions(UserPermissions userPermission) {
         noteDAO.addPermissions(userPermission);
     }
