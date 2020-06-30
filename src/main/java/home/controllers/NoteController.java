@@ -6,9 +6,6 @@ import home.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,16 +13,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 @Controller
 public class NoteController {
@@ -47,6 +40,11 @@ public class NoteController {
             return Collections.emptyList();
         }
 
+    }
+
+    @ModelAttribute("importTypes")
+    public List<String> importTypes() {
+        return Arrays.asList("JSON", "XML");
     }
 
     @ModelAttribute("otherNotesMap")
@@ -152,24 +150,34 @@ public class NoteController {
     }
 
     @GetMapping("/tojson/{id}")
-    public String exportToJson(@PathVariable("id") int id, RedirectAttributes attributes) {
+    public String exportToJson(@PathVariable("id") int id
+                               , Model model
+           // , RedirectAttributes attributes
+    ) {
         User currentUser = getCurrentUser();
         if (currentUser.getId() == noteService.getById(id).getOwner().getId()) {
-            boolean exported = noteService.exportToJson(id);
-            if (exported) {
+            String exported = noteService.exportToJson(id);
+            if (exported != null) {
+                model.addAttribute("exported", exported);
+
+            } else {
+                String msg = messageSource.getMessage("note.exportFail", null, LocaleContextHolder.getLocale());
+                model.addAttribute("exported", msg);
+            }
+            /*if (exported) {
                 String msg = messageSource.getMessage("note.exportSuccess", null, LocaleContextHolder.getLocale());
                 attributes.addFlashAttribute("export", msg + " " + System.getProperty("java.io.tmpdir") + File.separator);
             } else {
                 String msg = messageSource.getMessage("note.exportFail", null, LocaleContextHolder.getLocale());
                 attributes.addFlashAttribute("export", msg);
-            }
-            return "redirect:/home";
+            }*/
+            return "export";
         } else {
             return "403";
         }
     }
 
-    @PostMapping("/import")
+/*    @PostMapping("/import")
     public String importFromJson(@RequestParam("file") MultipartFile file, RedirectAttributes attributes) {
         // check if file is empty
         if (file.isEmpty()) {
@@ -194,6 +202,27 @@ public class NoteController {
             e.printStackTrace();
             String msg = messageSource.getMessage("note.importFail", null, LocaleContextHolder.getLocale());
             attributes.addFlashAttribute("message", msg);
+        }
+
+        return "redirect:/home";
+    }*/
+
+    @GetMapping("/import")
+    public String importPage(Model model) {
+        ImportDetails importDetails = new ImportDetails();
+        model.addAttribute("importDetails", importDetails);
+        return "import";
+    }
+
+    @PostMapping("/import")
+    public String importFrom(@ModelAttribute("importDetails") ImportDetails importDetails) {
+        User currentUser = getCurrentUser();
+        if (currentUser != null) {
+            if (importDetails.getImportType() == ImportType.JSON) {
+                noteService.importFromJson(importDetails.getImportString(), currentUser.getId());
+            } else if (importDetails.getImportType() == ImportType.XML) {
+                //TODO
+            }
         }
 
         return "redirect:/home";

@@ -1,6 +1,7 @@
 package home.dao;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -104,23 +105,23 @@ public class NoteDAOImpl implements NoteDAO {
     }
 
     @Override
-    public boolean exportToJson(int id) {
+    public String exportToJson(int id) {
         Note note = getById(id);
-        try {
+
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
             ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-            String dir = System.getProperty("java.io.tmpdir") + File.separator;
+/*            String dir = System.getProperty("java.io.tmpdir") + File.separator;
             String fileName = dir +
                     String.valueOf(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy_HH:mm:ss")))+".json";
             File jsonFile = new File(fileName);
             Files.createFile(jsonFile.toPath());
-            jsonFile.setReadable(true, false);
-            ow.writeValue(jsonFile, note);
-            return true;
-        } catch (IOException e) {
+            jsonFile.setReadable(true, false);*/
+        try {
+            return ow.writeValueAsString(note);
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
 

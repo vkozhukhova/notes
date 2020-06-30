@@ -29,7 +29,7 @@
             <a class="nav-link" th:href="@{/add}" th:text="#{note.add}">Add new note</a>
             <a class="nav-link" th:href="@{/permissions}" th:text="#{user.addPermissions}">Add permissions</a>
             <a class="nav-link" th:href="@{/other}" th:text="#{user.lookOtherNotes}">Look for other notes</a>
-            <a class="nav-link" th:href="@{/fromjson}" th:text="#{button.import}">Import</a>
+            <a class="nav-link" th:href="@{/import}" th:text="#{button.import}">Import</a>
         </nav>
     </div>
 
@@ -63,7 +63,7 @@
                         <a th:href="@{'/delete/' + ${n.id}}" th:text="#{note.delete}">delete</a>
                         <br>
                         <a th:href="@{'/history/' + ${n.id}}" th:text="#{note.history}">history</a>
-                        <a th:href="@{'/tojson/' + ${n.id}}" th:text="#{note.json}">tojson</a>
+                        <a target="_blank" rel="noopener noreferrer" th:href="@{'/tojson/' + ${n.id}}" th:text="#{note.json}">tojson</a>
                     </td>
                 </tr>
                 </tbody>
@@ -75,7 +75,7 @@
     <!--    <h2 th:text="#{title.add}">Add</h2>-->
 
 </div>
-    <h2 th:text="#{button.import}">Import</h2>
+<!--    <h2 th:text="#{button.import}">Import</h2>
     <b><p th:text="${message}" th:if="${message ne null}"></p></b>
     <div>
         <form method="post" th:action="@{/import}" enctype="multipart/form-data">
@@ -84,7 +84,7 @@
             </div>
             <p><button type="submit" th:text="#{button.import}">Import</button></p>
         </form>
-    </div>
+    </div>-->
 <!--<h2 th:text="#{user.permissions}">Permissions</h2>-->
 
 

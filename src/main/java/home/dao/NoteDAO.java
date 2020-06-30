@@ -12,7 +12,7 @@ public interface NoteDAO {
     void edit(Note note);
     Note getById(int id);
     List<NoteHistory> historicalNotes(int id);
-    boolean exportToJson(int id);
+    String exportToJson(int id);
     boolean importFromJson(String jsonString, long userId);
     void addPermissions(UserPermissions userPermission);
     Map<Note, Permission> getOtherNotes(long userId);

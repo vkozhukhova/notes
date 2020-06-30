@@ -56,7 +56,7 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     @Transactional
-    public boolean exportToJson(int id) {
+    public String exportToJson(int id) {
         return noteDAO.exportToJson(id);
     }
 

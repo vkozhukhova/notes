@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="UTF-8">
+    <!-- Required meta tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <title th:text="#{button.import}">Notes Import Page</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.0.3/sockjs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+</head>
+<body>
+<div class="container">
+
+    <div class="row">
+        <div sec:authorize="isAuthenticated()">
+            <span th:text="#{title.authenticated}"> </span>
+            <span class="badge badge-primary" sec:authentication="name"></span></div>
+    </div>
+    <div class="row">
+        <form th:action="@{/logout}" method="get">
+            <button name="logout" type="Submit" th:text="#{button.logout}" class="btn btn-primary btn-sm">Logout</button>
+        </form>
+    </div>
+    <br>
+
+    <form action="#" th:action="@{/import}" th:object="${importDetails}" method="post">
+
+        <div class="row">
+            <label th:text="#{note.import}">Import From</label>
+            <div class="col-md-auto">
+                <select class="custom-select" th:field="*{importType}" >
+                    <option th:each="type : ${T(home.model.ImportType).values()}" th:value="${type}"
+                            th:text="${type}">
+
+                    </option>
+                </select>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-auto">
+                <textarea id="imported" name="imported" rows="10" cols="45" th:field="*{importString}"></textarea>
+            </div>
+        </div>
+
+        <p><input type="submit" th:value="#{button.import}" class="btn btn-primary"/></p>
+    </form>
+
+</div>
+
+</body>
+</html>
